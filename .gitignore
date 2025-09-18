@@ -1,0 +1,15 @@
+# Node.js
+node_modules/
+*.log
+
+# Environment variables and sensitive files
+server/.env
+server/client_secret.json
+
+# Frontend build outputs
+client/build/
+dist/
+
+# IDE files
+.vscode/
+.idea/

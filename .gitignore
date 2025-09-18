@@ -5,6 +5,7 @@ node_modules/
 # Environment variables and sensitive files
 server/.env
 server/client_secret.json
+server/tokens.json
 
 # Frontend build outputs
 client/build/

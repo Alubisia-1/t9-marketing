@@ -1,0 +1,45 @@
+.dashboard {
+  padding: 40px 0;
+}
+
+.dashboard h1 {
+  text-align: center;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.metrics, .timeline, .insights, .competitor-analysis, .content-generation, .roi-calculator, .communication, .resources, .payment {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.metrics h3, .timeline h3, .insights h3, .competitor-analysis h3, .content-generation h3, .roi-calculator h3, .communication h3, .resources h3, .payment h3 {
+  margin-bottom: 10px;
+  color: #1e3a8a;
+}
+
+.insights form, .competitor-analysis form, .content-generation form, .roi-calculator form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.insights input, .competitor-analysis input, .content-generation input, .roi-calculator input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .dashboard h1 {
+    font-size: 28px;
+  }
+}

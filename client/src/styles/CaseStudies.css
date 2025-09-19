@@ -1,0 +1,58 @@
+.case-studies {
+  padding: 40px 0;
+}
+
+.case-studies h1 {
+  text-align: center;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+.case-studies p {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 18px;
+}
+
+.case-study-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.case-study {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.case-study h3 {
+  margin-bottom: 10px;
+  color: #1e3a8a;
+}
+
+.case-study a {
+  color: #1e3a8a;
+  text-decoration: none;
+}
+
+.cta-section {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.cta-section h2 {
+  margin-bottom: 20px;
+  color: #1e3a8a;
+}
+
+@media (max-width: 768px) {
+  .case-studies h1 {
+    font-size: 28px;
+  }
+
+  .case-studies p {
+    font-size: 16px;
+  }
+}

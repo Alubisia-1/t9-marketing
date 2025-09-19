@@ -38,6 +38,11 @@ app.get('/', (req, res) => {
   res.send('T9 Marketing Backend');
 });
 
+module.export = app;
+
 // Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (require.main === module) {
+  app.listen(process.env.PORT || 5000, () => {
+    console.log(`Server running on port ${process.env.PORT || 5000}`);
+  });
+}

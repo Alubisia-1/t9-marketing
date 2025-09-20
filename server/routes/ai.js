@@ -13,19 +13,28 @@ const openai = process.env.OPENAI_API_KEY
   : null;
 
 // Initialize Google Search Console client
-// Initialize Google Search Console client
-const credentials = JSON.parse(fs.readFileSync(process.env.GOOGLE_CLIENT_SECRET_PATH));
+let credentials;
+try {
+  credentials = JSON.parse(process.env.GOOGLE_CLIENT_SECRET_JSON || '{}');
+  if (!credentials.web?.client_id || !credentials.web?.client_secret) {
+    throw new Error('Invalid or missing Google credentials in GOOGLE_CLIENT_SECRET_JSON');
+  }
+} catch (error) {
+  console.error('Failed to load Google credentials:', error.message);
+  credentials = { web: { client_id: '', client_secret: '' } }; // Fallback to prevent crashes
+}
+
 const { client_secret, client_id } = credentials.web;
 
-// ✅ Force the redirect URI to match exactly what you set in Google Cloud
 const oAuth2Client = new google.auth.OAuth2(
   client_id,
   client_secret,
-  "http://localhost:5000/api/ai/oauth2callback"
+  process.env.NODE_ENV === 'production'
+    ? 'https://t9-marketing-yb77-git-master-alubisia-1s-projects.vercel.app/api/ai/oauth2callback'
+    : 'http://localhost:5000/api/ai/oauth2callback'
 );
 
 const searchconsole = google.webmasters({ version: 'v3', auth: oAuth2Client });
-
 
 // Mock data fallback
 const mockKeywords = [
@@ -40,8 +49,16 @@ const mockCompetitors = [
 // Load GSC tokens
 async function loadTokens() {
   try {
-    const tokens = JSON.parse(fs.readFileSync('tokens.json'));
+    const tokenPath = '/tmp/tokens.json'; // Use /tmp for Vercel compatibility
+    if (!fs.existsSync(tokenPath)) {
+      throw new Error('Tokens file not found');
+    }
+    const tokens = JSON.parse(fs.readFileSync(tokenPath));
+    if (!tokens.access_token) {
+      throw new Error('Invalid tokens in /tmp/tokens.json');
+    }
     oAuth2Client.setCredentials(tokens);
+    console.log('Successfully loaded GSC tokens from /tmp/tokens.json');
   } catch (error) {
     console.error('Error loading GSC tokens:', error.message);
     throw new Error('GSC authentication required. Visit /api/ai/auth to authenticate.');
@@ -63,8 +80,8 @@ router.get('/oauth2callback', async (req, res) => {
   try {
     const { tokens } = await oAuth2Client.getToken(code);
     oAuth2Client.setCredentials(tokens);
-    fs.writeFileSync('tokens.json', JSON.stringify(tokens));
-    console.log('Tokens saved to tokens.json');
+    fs.writeFileSync('/tmp/tokens.json', JSON.stringify(tokens)); // Use /tmp for Vercel
+    console.log('Tokens saved to /tmp/tokens.json');
     res.send('GSC Authentication successful! You can close this window.');
   } catch (err) {
     console.error('Error retrieving access token:', err.message);
@@ -81,9 +98,12 @@ router.get('/keywords', async (req, res) => {
   if (cachedData) return res.json(cachedData);
 
   try {
+    if (!process.env.GSC_SITE_URL) {
+      throw new Error('GSC_SITE_URL environment variable is not defined');
+    }
     await loadTokens();
     const response = await searchconsole.searchanalytics.query({
-      siteUrl: process.env.GSC_SITE_URL || 'sc-domain:yourdomain.com',
+      siteUrl: process.env.GSC_SITE_URL,
       requestBody: {
         startDate: '2025-08-01',
         endDate: '2025-09-01',
@@ -112,6 +132,7 @@ router.get('/keywords', async (req, res) => {
 
     const result = keywords.length > 0 ? keywords.slice(0, 5) : mockKeywords;
     cache.set(cacheKey, result);
+    console.log(`Fetched keywords for phrase: ${phrase}`);
     res.json(result);
   } catch (error) {
     console.error('GSC API error:', error.message);
@@ -146,6 +167,7 @@ router.post('/content', async (req, res) => {
 
     const result = { content: completion.choices[0].message.content };
     cache.set(cacheKey, result);
+    console.log(`Generated content for topic: ${topic}`);
     res.json(result);
   } catch (error) {
     console.error('OpenAI API error:', error.message);
@@ -162,9 +184,12 @@ router.get('/competitor-analysis', async (req, res) => {
   if (cachedData) return res.json(cachedData);
 
   try {
+    if (!process.env.GSC_SITE_URL) {
+      throw new Error('GSC_SITE_URL environment variable is not defined');
+    }
     await loadTokens();
     const response = await searchconsole.searchanalytics.query({
-      siteUrl: process.env.GSC_SITE_URL || 'sc-domain:yourdomain.com',
+      siteUrl: process.env.GSC_SITE_URL,
       requestBody: {
         startDate: '2025-08-01',
         endDate: '2025-09-01',
@@ -182,6 +207,7 @@ router.get('/competitor-analysis', async (req, res) => {
 
     const result = competitors.length > 0 ? competitors.slice(0, 3) : mockCompetitors;
     cache.set(cacheKey, result);
+    console.log(`Fetched competitor analysis for domain: ${domain}`);
     res.json(result);
   } catch (error) {
     console.error('GSC API error:', error.message);

@@ -13,26 +13,30 @@ const openai = process.env.OPENAI_API_KEY
   : null;
 
 // Initialize Google Search Console client
-let credentials;
-try {
-  credentials = JSON.parse(process.env.GOOGLE_CLIENT_SECRET_JSON || '{}');
-  if (!credentials.web?.client_id || !credentials.web?.client_secret) {
-    throw new Error('Invalid or missing Google credentials in GOOGLE_CLIENT_SECRET_JSON');
-  }
-} catch (error) {
-  console.error('Failed to load Google credentials:', error.message);
-  credentials = { web: { client_id: '', client_secret: '' } }; // Fallback to prevent crashes
+const credentials = {
+  client_id: process.env.GOOGLE_CLIENT_ID,
+  client_secret: process.env.GOOGLE_CLIENT_SECRET,
+  project_id: process.env.GOOGLE_PROJECT_ID,
+  auth_uri: process.env.GOOGLE_AUTH_URI,
+  token_uri: process.env.GOOGLE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.GOOGLE_CERT_URL,
+  redirect_uris: [process.env.GOOGLE_REDIRECT_URI],
+  javascript_origins: [process.env.GOOGLE_JAVASCRIPT_ORIGIN],
+};
+
+if (!credentials.client_id || !credentials.client_secret) {
+  console.error("Missing Google OAuth credentials! Check your environment variables.");
 }
 
-const { client_secret, client_id } = credentials.web;
 
 const oAuth2Client = new google.auth.OAuth2(
-  client_id,
-  client_secret,
+  credentials.client_id,
+  credentials.client_secret,
   process.env.NODE_ENV === 'production'
-    ? 'https://t9-marketing-yb77-git-master-alubisia-1s-projects.vercel.app/api/ai/oauth2callback'
+    ? credentials.redirect_uris[0] // from env var
     : 'http://localhost:5000/api/ai/oauth2callback'
 );
+
 
 const searchconsole = google.webmasters({ version: 'v3', auth: oAuth2Client });
 

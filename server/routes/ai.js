@@ -50,21 +50,26 @@ const mockCompetitors = [
   { competitor: 'Competitor B', strength: 'High ad spend', weakness: 'Poor content quality' },
 ];
 
-// Load GSC tokens
+// Load GSC tokens from /tmp/tokens.json (Vercel compatible)
 async function loadTokens() {
   try {
-    const tokenPath = '/tmp/tokens.json'; // Use /tmp for Vercel compatibility
+    const tokenPath = '/tmp/tokens.json'; // Only temp storage works on Vercel
     if (!fs.existsSync(tokenPath)) {
       throw new Error('Tokens file not found');
     }
-    const tokens = JSON.parse(fs.readFileSync(tokenPath));
+
+    const raw = fs.readFileSync(tokenPath, 'utf-8');
+    if (!raw) throw new Error('Tokens file is empty');
+
+    const tokens = JSON.parse(raw);
     if (!tokens.access_token) {
       throw new Error('Invalid tokens in /tmp/tokens.json');
     }
+
     oAuth2Client.setCredentials(tokens);
-    console.log('Successfully loaded GSC tokens from /tmp/tokens.json');
+    console.log('✅ Successfully loaded GSC tokens from /tmp/tokens.json');
   } catch (error) {
-    console.error('Error loading GSC tokens:', error.message);
+    console.error('❌ Error loading GSC tokens:', error.message);
     throw new Error('GSC authentication required. Visit /api/ai/auth to authenticate.');
   }
 }

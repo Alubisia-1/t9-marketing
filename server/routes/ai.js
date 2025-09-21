@@ -53,21 +53,13 @@ const mockCompetitors = [
 // Load GSC tokens from /tmp/tokens.json (Vercel compatible)
 async function loadTokens() {
   try {
-    const tokenPath = '/tmp/tokens.json'; // Only temp storage works on Vercel
-    if (!fs.existsSync(tokenPath)) {
-      throw new Error('Tokens file not found');
+    if (!process.env.GSC_TOKENS) {
+      throw new Error('No tokens found in environment variables');
     }
 
-    const raw = fs.readFileSync(tokenPath, 'utf-8');
-    if (!raw) throw new Error('Tokens file is empty');
-
-    const tokens = JSON.parse(raw);
-    if (!tokens.access_token) {
-      throw new Error('Invalid tokens in /tmp/tokens.json');
-    }
-
+    const tokens = JSON.parse(process.env.GSC_TOKENS);
     oAuth2Client.setCredentials(tokens);
-    console.log('✅ Successfully loaded GSC tokens from /tmp/tokens.json');
+    console.log('✅ Successfully loaded GSC tokens from env var');
   } catch (error) {
     console.error('❌ Error loading GSC tokens:', error.message);
     throw new Error('GSC authentication required. Visit /api/ai/auth to authenticate.');

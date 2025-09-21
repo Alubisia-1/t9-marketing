@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
   res.send('T9 Marketing Backend');
 });
 
-module.export = app;
+module.exports = app;
 
 // Start Server
 if (require.main === module) {

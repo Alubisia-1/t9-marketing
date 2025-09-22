@@ -22,7 +22,7 @@ function Dashboard() {
       navigate('/login');
       return;
     }
-    axios.get('http://localhost:5000/api/auth/me', {
+    axios.get('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => setUser(response.data))
@@ -36,7 +36,7 @@ function Dashboard() {
 
   const fetchKeywords = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/ai/keywords`, {
+      axios.get('/api/ai/keywords', {
         params: { phrase: keywordPhrase },
       });
       setKeywords(response.data);
@@ -47,7 +47,7 @@ function Dashboard() {
 
   const fetchCompetitors = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/ai/competitor-analysis`, {
+      axios.get('/api/ai/competitor-analysis', {
         params: { domain: competitorDomain },
       });
       setCompetitors(response.data);
@@ -59,7 +59,7 @@ function Dashboard() {
   const generateContent = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/ai/content', {
+      axios.post('/api/ai/content', {
         topic: contentTopic,
       });
       setGeneratedContent(response.data.content);

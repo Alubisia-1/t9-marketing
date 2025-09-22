@@ -36,7 +36,7 @@ function Dashboard() {
 
   const fetchKeywords = async () => {
     try {
-      axios.get('/api/ai/keywords', {
+      const response = await axios.get('/api/ai/keywords', {
         params: { phrase: keywordPhrase },
       });
       setKeywords(response.data);
@@ -47,7 +47,7 @@ function Dashboard() {
 
   const fetchCompetitors = async () => {
     try {
-      axios.get('/api/ai/competitor-analysis', {
+      const response = await axios.get('/api/ai/competitor-analysis', {
         params: { domain: competitorDomain },
       });
       setCompetitors(response.data);
@@ -59,7 +59,7 @@ function Dashboard() {
   const generateContent = async (e) => {
     e.preventDefault();
     try {
-      axios.post('/api/ai/content', {
+      const response = await axios.post('/api/ai/content', {
         topic: contentTopic,
       });
       setGeneratedContent(response.data.content);
@@ -68,7 +68,6 @@ function Dashboard() {
       setGeneratedContent('Failed to generate content.');
     }
   };
-
   const calculateROI = (e) => {
     e.preventDefault();
     const calculatedROI = (investment * 2.5).toFixed(2); // Mock ROI calculation

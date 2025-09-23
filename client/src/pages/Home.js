@@ -11,7 +11,7 @@ function Home() {
           <p>Transform your brand with our intelligent marketing solutions.</p>
           <Link to="/contact" className="btn-1">Get Free Strategy Consultation</Link>
           <div className="trust-indicators">
-            <p>Trusted by: <img src="/client-logo1.png" alt="Client 1" /> <img src="/client-logo2.png" alt="Client 2" /></p>
+            <p>Trusted by: <img src="/logos/openai.png" alt="OpenAI" /> <img src="/logos/analytics.png" alt="Google Analytics" /></p>
           </div>
         </div>
       </section>

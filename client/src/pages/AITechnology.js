@@ -11,7 +11,7 @@ function AITechnology() {
   const handleGenerateContent = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/ai/content', { topic });
+      const response = await axios.post('/api/ai/content', { topic });
       setGeneratedContent(response.data.content);
       setStatus('Content generated successfully!');
     } catch (error) {
